@@ -30,6 +30,8 @@ public class Repository extends RealmObject {
 
 	private Owner owner;
 
+	public Repository() {}
+
 	public Integer getStars() {
 		return stars;
 	}

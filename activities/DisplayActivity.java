@@ -53,26 +53,47 @@ public class DisplayActivity extends AppCompatActivity implements NavigationView
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_display);
 
+		//Initialize
+		initialize();
+
+		//Get Bundle Data
+		getBundleData();
+	}
+
+	//Initialize Views
+	private void initialize() {
+
+		//Initialize Toolbar and set title
 		Toolbar toolbar = findViewById(R.id.toolbar_display);
 		setSupportActionBar(toolbar);
 		getSupportActionBar().setTitle("Showing Browsed Results");
 
+		//Initialize RecyclerView and set LayoutManager
 		mRecyclerView = findViewById(R.id.recyclerView);
 		LinearLayoutManager layoutManager = new LinearLayoutManager(this);
 		layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 		mRecyclerView.setLayoutManager(layoutManager);
 
+		//Initialize Retrofit
 		mService = RetrofitClient.getGithubAPIService();
+
+		//Initialize Realm
 		mRealm = Realm.getDefaultInstance();
 
+		//Initialize NavigationView
 		NavigationView navigationView = findViewById(R.id.nav_view);
 		navigationView.setNavigationItemSelectedListener(this);
 
+		//Initialize DrawerLayout
 		mDrawerLayout = findViewById(R.id.drawer_layout);
 		ActionBarDrawerToggle drawerToggle
 				= new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
 		mDrawerLayout.addDrawerListener(drawerToggle);
 		drawerToggle.syncState();
+	}
+
+	//Get Intent Data and assign to variables
+	private void getBundleData() {
 
 		Intent intent = getIntent();
 		if (intent.getIntExtra(Constants.KEY_QUERY_TYPE, -1) == Constants.SEARCH_BY_REPO) {
@@ -85,6 +106,7 @@ public class DisplayActivity extends AppCompatActivity implements NavigationView
 		}
 	}
 
+	//Fetch User Repositories from Github Api
 	private void fetchUserRepositories(String githubUser) {
 
 		mService.searchRepositoriesByUser(githubUser).enqueue(new Callback<List<Repository>>() {
@@ -119,6 +141,7 @@ public class DisplayActivity extends AppCompatActivity implements NavigationView
 		});
 	}
 
+	//Fetch Repositories from Github Api
 	private void fetchRepositories(String queryRepo, String repoLanguage) {
 
 		Map<String, String> query = new HashMap<>();
@@ -158,11 +181,13 @@ public class DisplayActivity extends AppCompatActivity implements NavigationView
 		});
 	}
 
+	//Setup RecyclerView
 	private void setupRecyclerView(List<Repository> items) {
 		mDisplayAdapter = new DisplayAdapter(this, items);
 		mRecyclerView.setAdapter(mDisplayAdapter);
 	}
 
+	//Setup Drawer
 	@Override
 	public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
@@ -185,10 +210,12 @@ public class DisplayActivity extends AppCompatActivity implements NavigationView
 		return true;
 	}
 
+	//Swap to Repositories
 	private void showBrowsedResults() {
 		mDisplayAdapter.swap(browsedRepositories);
 	}
 
+	//Swap to Bookmarks
 	private void showBookmarks() {
 		mRealm.executeTransaction(new Realm.Transaction() {
 			@Override
@@ -199,10 +226,12 @@ public class DisplayActivity extends AppCompatActivity implements NavigationView
 		});
 	}
 
+	//Close Drawer
 	private void closeDrawer() {
 		mDrawerLayout.closeDrawer(GravityCompat.START);
 	}
 
+	//Back Pressed
 	@Override
 	public void onBackPressed() {
 		if (mDrawerLayout.isDrawerOpen(GravityCompat.START))
