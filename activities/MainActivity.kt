@@ -1,10 +1,12 @@
 package com.chad.gads2022_java_kotlin.activities
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.chad.gads2022_java_kotlin.R
 import io.realm.RealmConfiguration
 import android.content.Intent
+import android.content.SharedPreferences
 import android.widget.EditText
 import com.chad.gads2022_java_kotlin.app.Constants
 import com.google.android.material.textfield.TextInputLayout
@@ -36,11 +38,22 @@ class MainActivity : AppCompatActivity() {
         //Save On Click Listener
         saveNameButton.setOnClickListener {
 
+            if(isNotEmpty(etName, inputLayoutName)) {
+
+                val name = etName.text.toString()
+                val sharedPreferences = getSharedPreferences(Constants.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE)
+                val editor = sharedPreferences.edit()
+                editor.putString(Constants.KEY_PERSON_NAME, name)
+                editor.apply()
+
+            }
+
+
         }
 
         //Repositories On Click Listener
         listRepositoriesButton.setOnClickListener {
-            if(isNotEmpty(etRepoName, inputLayoutName)) {
+            if(isNotEmpty(etRepoName, inputLayoutRepoName)) {
 
                 val repoName = etRepoName.text.toString()
                 val language = etLanguage.text.toString()

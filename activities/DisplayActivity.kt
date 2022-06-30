@@ -1,5 +1,6 @@
 package com.chad.gads2022_java_kotlin.activities
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -19,6 +20,7 @@ import com.chad.gads2022_java_kotlin.retrofit.RetrofitClient
 import com.google.android.material.navigation.NavigationView
 import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_display.*
+import kotlinx.android.synthetic.main.header.view.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -83,6 +85,17 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
             val githubUser = intent.getStringExtra(Constants.KEY_GITHUB_USER)
             fetchUserRepositories(githubUser)
         }
+
+        setAppUserName()
+    }
+
+    private fun setAppUserName() {
+
+        val sharedPreferences = getSharedPreferences(Constants.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE)
+        val name = sharedPreferences.getString(Constants.KEY_PERSON_NAME, "User")
+        val headerView = navigationView.getHeaderView(0)
+        headerView.txvName.text = name
+
     }
 
     //Fetch User Repositories from Github Api
