@@ -1,27 +1,18 @@
-package com.chad.gads2022_java_kotlin.retrofit;
+package com.chad.gads2022_java_kotlin.retrofit
 
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.Retrofit
+import com.chad.gads2022_java_kotlin.retrofit.GithubAPIService
+import com.chad.gads2022_java_kotlin.retrofit.RetrofitClient
+import retrofit2.converter.gson.GsonConverterFactory
 
+object RetrofitClient {
+    private const val BASE_URL = "https://api.github.com/"
+    private val retrofit: Retrofit =
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
 
-public class RetrofitClient {
-
-	private static final String BASE_URL = "https://api.github.com/";
-	private static Retrofit retrofit = null;
-
-	public static GithubAPIService getGithubAPIService() {
-		Retrofit retrofit = getClient(BASE_URL);
-		GithubAPIService githubAPIService = retrofit.create(GithubAPIService.class);
-		return githubAPIService;
-	}
-
-	public static Retrofit getClient(String baseUrl) {
-		if (retrofit==null) {
-			retrofit = new Retrofit.Builder()
-					.baseUrl(baseUrl)
-					.addConverterFactory(GsonConverterFactory.create())
-					.build();
-		}
-		return retrofit;
-	}
+    val githubAPIService: GithubAPIService =
+        retrofit.create(GithubAPIService::class.java)
 }
