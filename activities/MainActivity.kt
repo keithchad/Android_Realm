@@ -1,22 +1,20 @@
 package com.chad.gads2022_java_kotlin.activities
 
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import com.chad.gads2022_java_kotlin.R
-import io.realm.RealmConfiguration
 import android.content.Intent
-import android.content.SharedPreferences
+import android.os.Bundle
 import android.widget.EditText
+import androidx.appcompat.app.AppCompatActivity
+import com.chad.gads2022_java_kotlin.R
 import com.chad.gads2022_java_kotlin.app.Constants
 import com.google.android.material.textfield.TextInputLayout
 import io.realm.Realm
+import io.realm.RealmConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        private val TAG: String = MainActivity::class.java.simpleName
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

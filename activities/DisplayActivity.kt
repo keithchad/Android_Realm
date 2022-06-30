@@ -28,7 +28,7 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
     private lateinit var displayAdapter: DisplayAdapter
     private var repository: List<Repository> =  mutableListOf()
     private val githubAPIService: GithubAPIService by lazy {
-        RetrofitClient.getGithubAPIService()
+        RetrofitClient.githubAPIService
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,34 +95,37 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
 
     //Fetch User Repositories from Github Api
     private fun fetchUserRepositories(githubUser: String?) {
-        githubAPIService.searchRepositoriesByUser(githubUser).enqueue(object : Callback<List<Repository>>{
-            override fun onResponse(
-                call: Call<List<Repository>>,
-                response: Response<List<Repository>>
-            ) {
-               if (response.isSuccessful) {
-                   Log.i(TAG, "Posts from API")
+        if (githubUser != null) {
+            githubAPIService.searchRepositoriesByUser(githubUser).enqueue(object : Callback<List<Repository>>{
+                override fun onResponse(
+                    call: Call<List<Repository>>,
+                    response: Response<List<Repository>>
+                ) {
+                    if (response.isSuccessful) {
+                        Log.i(TAG, "Posts from API")
 
-                   response.body() ?. let {
-                       repository = it
-                   }
+                        response.body() ?. let {
+                            repository = it
+                        }
 
-                   if (repository.isNotEmpty()) {
-                       setupRecyclerView(repository)
-                   } else {
-                       Util.showMessage(this@DisplayActivity, "No items found")
-                   }
+                        if (repository.isNotEmpty()) {
+                            setupRecyclerView(repository)
+                        } else {
+                            Util.showMessage(this@DisplayActivity, "No items found")
+                        }
 
-               } else {
-                   Log.i(TAG, "Error $response")
-                   Util.showErrorMessage(this@DisplayActivity, response.errorBody())
-               }
-            }
+                    } else {
+                        Log.i(TAG, "Error $response")
+                        response.errorBody()
+                            ?.let { Util.showErrorMessage(this@DisplayActivity, it) }
+                    }
+                }
 
-            override fun onFailure(call: Call<List<Repository>>, t: Throwable) {
-                Util.showMessage(this@DisplayActivity, t.message)
-            }
-        })
+                override fun onFailure(call: Call<List<Repository>>, t: Throwable) {
+                    Util.showMessage(this@DisplayActivity, t.message)
+                }
+            })
+        }
     }
 
     //Fetch Repositories from Github Api
@@ -150,7 +153,7 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
                 } else {
                     Log.i(TAG, "error $response")
                     if (response.errorBody() != null) {
-                        Util.showErrorMessage(this@DisplayActivity, response.errorBody())
+                        Util.showErrorMessage(this@DisplayActivity, response.errorBody()!!)
                     }
                 }
             }

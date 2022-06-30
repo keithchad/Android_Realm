@@ -117,7 +117,7 @@ public class DisplayAdapter extends RecyclerView.Adapter<DisplayAdapter.MyViewHo
 			realm.executeTransactionAsync(new Realm.Transaction() {
 				@Override
 				public void execute(@NonNull Realm realm) {
-					realm.copyToRealmOrUpdate(current);
+					//realm.copyToRealmOrUpdate(current);
 				}
 			}, new Realm.Transaction.OnSuccess() {
 				@Override
