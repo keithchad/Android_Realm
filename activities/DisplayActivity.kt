@@ -27,9 +27,9 @@ import retrofit2.Response
 
 class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private var mDisplayAdapter: DisplayAdapter? = null
-    private var browsedRepositories: List<Repository?>? = null
-    private var mService: GithubAPIService? = null
-    private var mRealm: Realm? = null
+    private var repository: List<Repository?>? = null
+    private var githubAPIService: GithubAPIService? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_display)
@@ -54,10 +54,7 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
         recyclerView.layoutManager = layoutManager
 
         //Initialize Retrofit
-        mService = RetrofitClient.getGithubAPIService()
-
-        //Initialize Realm
-        mRealm = Realm.getDefaultInstance()
+        githubAPIService = RetrofitClient.getGithubAPIService()
 
         //Initialize NavigationView
         navigationView.setNavigationItemSelectedListener(this)
@@ -100,33 +97,31 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
 
     //Fetch User Repositories from Github Api
     private fun fetchUserRepositories(githubUser: String?) {
-        mService!!.searchRepositoriesByUser(githubUser).enqueue(object : Callback<List<Repository?>?> {
-                override fun onResponse(
-                    call: Call<List<Repository?>?>,
-                    response: Response<List<Repository?>?>
-                ) {
-                    if (response.isSuccessful) {
-                        Log.i(TAG, "posts loaded from API $response")
-                        if (response.body() != null) {
-                            browsedRepositories = response.body()
-                        }
-                        if (browsedRepositories != null && browsedRepositories!!.isNotEmpty()) setupRecyclerView(
-                            browsedRepositories
-                        ) else Util.showMessage(this@DisplayActivity, "No Items Found")
-                    } else {
-                        Log.i(TAG, "Error $response")
-                        if (response.errorBody() != null) {
-                            Util.showErrorMessage(this@DisplayActivity, response.errorBody())
-                        }
-                    }
-                }
+        githubAPIService!!.searchRepositoriesByUser(githubUser).enqueue(object : Callback<List<Repository>>{
+            override fun onResponse(
+                call: Call<List<Repository>>,
+                response: Response<List<Repository>>
+            ) {
+               if (response.isSuccessful) {
+                   Log.i(TAG, "Posts from API")
 
-                override fun onFailure(call: Call<List<Repository?>?>, t: Throwable) {
-                    Util.showMessage(this@DisplayActivity, t.message)
-                    Log.e("error", t.message!!)
-                    Toast.makeText(this@DisplayActivity, t.message, Toast.LENGTH_SHORT).show()
-                }
-            })
+                   repository = response.body()
+                   if (repository!!.isNotEmpty()) {
+                       setupRecyclerView(repository)
+                   } else {
+                       Util.showMessage(this@DisplayActivity, "No items found")
+                   }
+
+               } else {
+                   Log.i(TAG, "Error $response")
+                   Util.showErrorMessage(this@DisplayActivity, response.errorBody())
+               }
+            }
+
+            override fun onFailure(call: Call<List<Repository>>, t: Throwable) {
+                Util.showMessage(this@DisplayActivity, t.message)
+            }
+        })
     }
 
     //Fetch Repositories from Github Api
@@ -135,7 +130,7 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
         val query: MutableMap<String, String?> = HashMap()
         if (repoLanguage != null && repoLanguage.isNotEmpty()) queryRepo += " language:$repoLanguage"
         query["q"] = queryRepo
-        mService!!.searchRepositories(query).enqueue(object : Callback<SearchResponse?> {
+        githubAPIService!!.searchRepositories(query).enqueue(object : Callback<SearchResponse?> {
             override fun onResponse(
                 call: Call<SearchResponse?>,
                 response: Response<SearchResponse?>
@@ -143,9 +138,9 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
                 if (response.isSuccessful) {
                     Log.i(TAG, "posts loaded from API $response")
                     if (response.body() != null) {
-                        browsedRepositories = response.body()!!.items
+                        repository = response.body()!!.items
                     }
-                    if (browsedRepositories!!.isNotEmpty()) setupRecyclerView(browsedRepositories) else Util.showMessage(
+                    if (repository!!.isNotEmpty()) setupRecyclerView(repository) else Util.showMessage(
                         this@DisplayActivity,
                         "No Items Found"
                     )
@@ -188,17 +183,11 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
 
     //Swap to Repositories
     private fun showBrowsedResults() {
-        mDisplayAdapter!!.swap(browsedRepositories)
+        mDisplayAdapter!!.swap(repository)
     }
 
     //Swap to Bookmarks
     private fun showBookmarks() {
-        mRealm!!.executeTransaction { realm ->
-            val repositories = realm.where(
-                Repository::class.java
-            ).findAll()
-            mDisplayAdapter!!.swap(repositories)
-        }
     }
 
     //Close Drawer
@@ -210,7 +199,6 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
     override fun onBackPressed() {
         if (drawerLayout!!.isDrawerOpen(GravityCompat.START)) closeDrawer() else {
             super.onBackPressed()
-            mRealm!!.close()
         }
     }
 
