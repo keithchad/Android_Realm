@@ -1,4 +1,4 @@
-package com.chad.gads2022_java_kotlin.app
+package com.chad.gads2022_java_kotlin.constants
 
 object Constants {
     const val SEARCH_BY_REPO = 1

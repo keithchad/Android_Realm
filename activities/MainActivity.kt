@@ -3,11 +3,10 @@ package com.chad.gads2022_java_kotlin.activities
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.chad.gads2022_java_kotlin.R
-import com.chad.gads2022_java_kotlin.app.Constants
-import com.google.android.material.textfield.TextInputLayout
+import com.chad.gads2022_java_kotlin.constants.Constants
+import com.chad.gads2022_java_kotlin.extensions.isNotEmpty
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import kotlinx.android.synthetic.main.activity_main.*
@@ -36,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         //Save On Click Listener
         saveNameButton.setOnClickListener {
 
-            if(isNotEmpty(etName, inputLayoutName)) {
+            if(etName.isNotEmpty(inputLayoutName)) {
 
                 val name = etName.text.toString()
                 val sharedPreferences = getSharedPreferences(Constants.APP_SHARED_PREFERENCES, Context.MODE_PRIVATE)
@@ -51,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 
         //Repositories On Click Listener
         listRepositoriesButton.setOnClickListener {
-            if(isNotEmpty(etRepoName, inputLayoutRepoName)) {
+            if(etRepoName.isNotEmpty(inputLayoutRepoName)) {
 
                 val repoName = etRepoName.text.toString()
                 val language = etLanguage.text.toString()
@@ -69,7 +68,7 @@ class MainActivity : AppCompatActivity() {
         //User Repositories On Click Listener
         listUserRepositoriesButton.setOnClickListener {
 
-            if(isNotEmpty(etGithubUser, inputLayoutGithubUser)) {
+            if(etName.isNotEmpty(inputLayoutGithubUser)) {
                 val githubUser = etGithubUser.text.toString()
 
                 val intent = Intent(this@MainActivity, DisplayActivity::class.java)
@@ -82,17 +81,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    //Validation
-    private fun isNotEmpty(edittext: EditText, textInputLayout: TextInputLayout) : Boolean {
-        if(edittext.text.toString().isEmpty()) {
-            textInputLayout.error = "Blank"
-            return false
-        } else {
-            textInputLayout.isErrorEnabled = false
-            return true
-        }
-    }
-
     //Initialize Realm
     private fun initializeRealm() {
         Realm.init(this) // should only be done once when app starts
@@ -102,6 +90,5 @@ class MainActivity : AppCompatActivity() {
             .build()
         Realm.setDefaultConfiguration(config)
     }
-
 
 }

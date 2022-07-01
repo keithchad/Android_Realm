@@ -10,8 +10,9 @@ import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.chad.gads2022_java_kotlin.R
 import com.chad.gads2022_java_kotlin.adapters.DisplayAdapter
-import com.chad.gads2022_java_kotlin.app.Constants
-import com.chad.gads2022_java_kotlin.app.Util
+import com.chad.gads2022_java_kotlin.constants.Constants
+import com.chad.gads2022_java_kotlin.extensions.showErrorMessage
+import com.chad.gads2022_java_kotlin.extensions.toast
 import com.chad.gads2022_java_kotlin.models.Repository
 import com.chad.gads2022_java_kotlin.models.SearchResponse
 import com.chad.gads2022_java_kotlin.retrofit.GithubAPIService
@@ -111,18 +112,18 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
                         if (repository.isNotEmpty()) {
                             setupRecyclerView(repository)
                         } else {
-                            Util.showMessage(this@DisplayActivity, "No items found")
+                            toast("No items found")
                         }
 
                     } else {
                         Log.i(TAG, "Error $response")
                         response.errorBody()
-                            ?.let { Util.showErrorMessage(this@DisplayActivity, it) }
+                            ?.let { showErrorMessage(it) }
                     }
                 }
 
                 override fun onFailure(call: Call<List<Repository>>, t: Throwable) {
-                    Util.showMessage(this@DisplayActivity, t.message)
+                    t.message?.let { toast(it) }
                 }
             })
         }
@@ -146,20 +147,17 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
                         repository = it
                     }
 
-                    if (repository.isNotEmpty()) setupRecyclerView(repository) else Util.showMessage(
-                        this@DisplayActivity,
-                        "No Items Found"
-                    )
+                    if (repository.isNotEmpty()) setupRecyclerView(repository) else toast("No Items Found")
                 } else {
                     Log.i(TAG, "error $response")
                     if (response.errorBody() != null) {
-                        Util.showErrorMessage(this@DisplayActivity, response.errorBody()!!)
+                        showErrorMessage(response.errorBody()!!)
                     }
                 }
             }
 
             override fun onFailure(call: Call<SearchResponse?>, t: Throwable) {
-                Util.showMessage(this@DisplayActivity, t.toString())
+                toast(t.toString())
             }
         })
     }
