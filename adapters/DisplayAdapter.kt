@@ -1,7 +1,6 @@
 package com.chad.gads2022_java_kotlin.adapters
 
 import android.content.Context
-import com.chad.gads2022_java_kotlin.constants.Util.showMessage
 import androidx.recyclerview.widget.RecyclerView
 import com.chad.gads2022_java_kotlin.adapters.DisplayAdapter.MyViewHolder
 import android.view.LayoutInflater
@@ -11,6 +10,8 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.view.View
+import com.chad.gads2022_java_kotlin.extensions.showErrorMessage
+import com.chad.gads2022_java_kotlin.extensions.toast
 import com.chad.gads2022_java_kotlin.models.Repository
 import io.realm.Realm
 import kotlinx.android.synthetic.main.header.view.txvName
@@ -34,7 +35,7 @@ class DisplayAdapter(val context: Context, private var list: List<Repository>) :
     }
 
     fun swap(data: List<Repository>) {
-        if (data.isEmpty()) showMessage(context, "No Items Found")
+        if (data.isEmpty()) context.toast("No Items Found")
         list = data
         notifyDataSetChanged()
     }
@@ -54,9 +55,9 @@ class DisplayAdapter(val context: Context, private var list: List<Repository>) :
             val realm = Realm.getDefaultInstance()
             realm.executeTransactionAsync({
                 //realm.copyToRealmOrUpdate(current);
-            }, { showMessage(context, "Bookmarked Successfully") }) { error ->
+            }, { context.toast("Bookmarked Successfully") }) { error ->
                 Log.i(TAG, error.toString())
-                showMessage(context, "Error Occurred")
+                context.toast("Error Occurred")
             }
         }
 
