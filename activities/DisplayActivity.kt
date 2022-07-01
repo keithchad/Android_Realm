@@ -171,18 +171,21 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
     //Setup Drawer
     override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
         menuItem.isChecked = true
-        closeDrawer()
         when (menuItem.itemId) {
             R.id.item_bookmark -> {
-                showBookmarks()
-                supportActionBar!!.title = "Showing Bookmarks"
+                consumeMenuEvent({ showBookmarks() }, "Showing Bookmarks")
             }
             R.id.item_browsed_results -> {
-                showBrowsedResults()
-                supportActionBar!!.title = "Showing Browsed Results"
+                consumeMenuEvent({ showBrowsedResults() }, "Showing Browsed Results")
             }
         }
         return true
+    }
+
+    private fun consumeMenuEvent(function: () -> Unit, title: String) {
+        function()
+        closeDrawer()
+        supportActionBar!!.title = title
     }
 
     //Swap to Repositories
@@ -192,6 +195,7 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
 
     //Swap to Bookmarks
     private fun showBookmarks() {
+
     }
 
     //Close Drawer
