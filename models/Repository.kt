@@ -1,26 +1,28 @@
 package com.chad.gads2022_java_kotlin.models
 
 import com.google.gson.annotations.SerializedName
+import io.realm.RealmObject
+import io.realm.annotations.PrimaryKey
 
-class Repository(
-    val id: Int,
+open class Repository(
+    @PrimaryKey val id: Int = 0,
 
-    val name: String?,
+    val name: String? = null,
 
-    val language: String?,
+    val language: String? = null,
 
     @SerializedName("html_url")
-    val htmlUrl: String?,
+    val htmlUrl: String? = null,
 
-    val description: String?,
+    val description: String? = null,
 
     @SerializedName("stargazers_count")
-    val stars: Int?,
+    val stars: Int? = 0,
 
     @SerializedName("watchers_count")
-    val watchers: Int?,
+    val watchers: Int? = 0,
 
-    val forks: Int?,
+    val forks: Int? = 0,
 
-    val owner: Owner?,
-)
+    val owner: Owner? = null,
+) : RealmObject()

@@ -18,6 +18,7 @@ import com.chad.gads2022_java_kotlin.models.SearchResponse
 import com.chad.gads2022_java_kotlin.retrofit.GithubAPIService
 import com.chad.gads2022_java_kotlin.retrofit.RetrofitClient
 import com.google.android.material.navigation.NavigationView
+import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_display.*
 import kotlinx.android.synthetic.main.header.view.*
 import retrofit2.Call
@@ -195,7 +196,12 @@ class DisplayActivity : AppCompatActivity(), NavigationView.OnNavigationItemSele
 
     //Swap to Bookmarks
     private fun showBookmarks() {
+        val realm = Realm.getDefaultInstance()
 
+        realm.executeTransaction { realm ->
+            val realmList = realm.where(Repository::class.java).findAll()
+            displayAdapter.swap(realmList)
+        }
     }
 
     //Close Drawer

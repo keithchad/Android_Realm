@@ -1,16 +1,14 @@
 package com.chad.gads2022_java_kotlin.adapters
 
 import android.content.Context
-import androidx.recyclerview.widget.RecyclerView
-import com.chad.gads2022_java_kotlin.adapters.DisplayAdapter.MyViewHolder
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import com.chad.gads2022_java_kotlin.R
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
-import com.chad.gads2022_java_kotlin.extensions.showErrorMessage
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.chad.gads2022_java_kotlin.R
+import com.chad.gads2022_java_kotlin.adapters.DisplayAdapter.MyViewHolder
 import com.chad.gads2022_java_kotlin.extensions.toast
 import com.chad.gads2022_java_kotlin.models.Repository
 import io.realm.Realm
@@ -51,18 +49,17 @@ class DisplayAdapter(val context: Context, private var list: List<Repository>) :
             this.current = current
         }
 
-        private fun bookmarkRepository(current: Repository?) {
-            val realm = Realm.getDefaultInstance()
-            realm.executeTransactionAsync({
-                //realm.copyToRealmOrUpdate(current);
-            }, { context.toast("Bookmarked Successfully") }) { error ->
-                Log.i(TAG, error.toString())
-                context.toast("Error Occurred")
-            }
+        private fun bookmarkRepository(current: Repository) {
+            val realm: Realm = Realm.getDefaultInstance()
+            realm.executeTransactionAsync(
+                { realm -> realm.copyToRealmOrUpdate(current) },
+                { context.toast("Bookmarked Successfully") })
+            { context.toast("Error Occurred") }
+
         }
 
         init {
-            itemView.img_bookmark.setOnClickListener { bookmarkRepository(current) }
+            itemView.img_bookmark.setOnClickListener { current?.let { it1 -> bookmarkRepository(it1) } }
             itemView.setOnClickListener {
                 val url = current!!.htmlUrl
                 val webpage = Uri.parse(url)
